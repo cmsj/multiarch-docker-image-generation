@@ -321,10 +321,6 @@ sync
 EOF
 chmod +x $chroot_dir/etc/rc.local
 
-# Cleanup: man-db does not work via qemu-user
-chroot $chroot_dir rm /usr/bin/mandb
-chroot $chroot_dir dpkg-divert --local --rename --remove /usr/bin/mandb
-
 ### cleanup and unmount /proc
 chroot $chroot_dir apt-get autoclean
 chroot $chroot_dir apt-get clean

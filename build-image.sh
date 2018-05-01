@@ -74,11 +74,10 @@ echo 'Acquire::Languages "none";' > $chroot_dir/etc/apt/apt.conf.d/swibuntu-no-l
 # store Apt lists files gzipped on-disk for smaller size
 echo 'Acquire::GzipIndexes "true"; Acquire::CompressionTypes::Order:: "gz";' > $chroot_dir/etc/apt/apt.conf.d/swibuntu-gzip-indexes
 
-# man-db does not work via qemu-user
-chroot $chroot_dir dpkg-divert --local --rename --add /usr/bin/mandb
-chroot $chroot_dir ln -sf /bin/true /usr/bin/mandb
-
 mount -o bind /proc $chroot_dir/proc
+
+# HACK: Workaround for mandb syscall crash under qemu-user
+chroot $chroot_dir MAN_DISABLE_SECCOMP=1 apt-get -qy install man-db
 
 ### install ubuntu-desktop
 chroot $chroot_dir apt-get update
@@ -323,10 +322,6 @@ cat /sys/kernel/debug/dri/1/pstate >>/tmp/gpu_pstate.txt
 sync
 EOF
 chmod +x $chroot_dir/etc/rc.local
-
-# Cleanup: man-db does not work via qemu-user
-chroot $chroot_dir rm /usr/bin/mandb
-chroot $chroot_dir dpkg-divert --local --rename --remove /usr/bin/mandb
 
 ### cleanup and unmount /proc
 chroot $chroot_dir apt-get autoclean

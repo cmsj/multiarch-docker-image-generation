@@ -339,7 +339,7 @@ rm "$chroot_dir/etc/resolv.conf"
 umount "$chroot_dir/proc"
 
 ### create a tar archive from the chroot directory
-TAROPTS="cf"
+TAROPTS="cfz"
 if [ "${tarball}" == "*z" ]; then
     TAROPTS="${TAROPTS}z"
 fi
